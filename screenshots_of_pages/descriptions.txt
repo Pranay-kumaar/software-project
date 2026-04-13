@@ -1,0 +1,15 @@
+1. 01_landing_page.png: The ExamineAI landing page showing the main branding, features, and how it works.
+2. 02_login_page.png: The login page where existing users can enter their credentials to access the platform.
+3. 03_register_page.png: The registration page where new users can sign up as a Student or Teacher.
+4. 04_student_dashboard.png: The main student dashboard displaying an overview of recent activity and quick links.
+5. 05_student_classrooms.png: The classrooms page displaying all the classrooms the student is enrolled in.
+6. 06_student_tests.png: The tests page showing upcoming, available, and past examinations.
+7. 07_student_study_hub.png: The AI-powered Study Hub where students can chat with the AI assistant and upload PDFs.
+8. 08_student_results.png: The results analytics page showing the student's performance metrics and grades.
+10. 10_teacher_overview.png: The primary dashboard for teachers displaying recent class performance and key metrics.
+11. 11_teacher_classrooms.png: The classroom management view where teachers can add or organize student groups.
+12. 12_teacher_tests.png: The list of tests created by the teacher, showing their active and past status.
+13. 13_teacher_create_test.png: The interface for teachers to generate new examinations using the AI tools.
+14. 14_teacher_evaluations.png: The evaluation dashboard where teachers can review and finalize student grades.
+15. 15_teacher_analytics.png: High-level analytics panel detailing student progress and test statistics over time.
+16. 16_admin_overview.png: The system administrator dashboard providing platform-wide usage metrics and active user counts.
