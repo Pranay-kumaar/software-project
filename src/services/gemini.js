@@ -5,11 +5,11 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from './firebase';
 
 // Model fallback chain — if one model's quota is exhausted, try the next
+// Updated April 2026: Old 1.5/2.0 models are deprecated. Using current stable models.
 const MODEL_FALLBACK_CHAIN = [
-  'gemini-2.0-flash',
-  'gemini-2.0-flash-lite',
-  'gemini-1.5-flash',
-  'gemini-1.5-flash-8b',
+  'gemini-2.5-flash',
+  'gemini-2.5-flash-lite',
+  'gemini-2.5-pro',
 ];
 
 class GeminiService {
@@ -136,7 +136,7 @@ class GeminiService {
     return MODEL_FALLBACK_CHAIN[0];
   }
 
-  async getModel(modelName = 'gemini-2.0-flash') {
+  async getModel(modelName = 'gemini-2.5-flash') {
     await this.fetchKeys();
     const apiKey = this.getNextKey();
     const actualModel = this.getAvailableModel(modelName);
@@ -162,7 +162,7 @@ class GeminiService {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  async generateContent(prompt, modelName = 'gemini-2.0-flash') {
+  async generateContent(prompt, modelName = 'gemini-2.5-flash') {
     await this.fetchKeys();
 
     if (this.keys.length === 0) {
@@ -238,7 +238,7 @@ class GeminiService {
   async isKeyValid(apiKey) {
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-8b' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
       await model.generateContent('Hi');
       return { valid: true };
     } catch (error) {
