@@ -22,6 +22,7 @@ class GeminiService {
     this.lastFetchTime = 0;
     this.CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
     this._fetchPromise = null;
+    console.log('[GeminiService] Initialized (v2.5 stable models)');
   }
 
   async fetchKeys() {
