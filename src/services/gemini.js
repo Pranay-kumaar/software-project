@@ -138,9 +138,19 @@ class GeminiService {
   }
 
   async getModel(modelName = 'gemini-2.5-flash') {
+    // Legacy mapping: Update deprecated model names to current stable ones
+    const modelMapping = {
+      'gemini-2.0-flash': 'gemini-2.5-flash',
+      'gemini-2.0-flash-lite': 'gemini-2.5-flash-lite',
+      'gemini-1.5-flash': 'gemini-2.5-flash',
+      'gemini-1.5-flash-8b': 'gemini-2.5-flash-lite',
+      'gemini-1.5-pro': 'gemini-2.5-pro'
+    };
+    
+    const targetModel = modelMapping[modelName] || modelName;
     await this.fetchKeys();
     const apiKey = this.getNextKey();
-    const actualModel = this.getAvailableModel(modelName);
+    const actualModel = this.getAvailableModel(targetModel);
 
     if (!apiKey) {
       throw new Error('No valid Gemini API keys available. Please ask an admin to add API keys in the API Keys management page.');
@@ -164,6 +174,16 @@ class GeminiService {
   }
 
   async generateContent(prompt, modelName = 'gemini-2.5-flash') {
+    // Legacy mapping: Update deprecated model names to current stable ones
+    const modelMapping = {
+      'gemini-2.0-flash': 'gemini-2.5-flash',
+      'gemini-2.0-flash-lite': 'gemini-2.5-flash-lite',
+      'gemini-1.5-flash': 'gemini-2.5-flash',
+      'gemini-1.5-flash-8b': 'gemini-2.5-flash-lite',
+      'gemini-1.5-pro': 'gemini-2.5-pro'
+    };
+    
+    const targetModel = modelMapping[modelName] || modelName;
     await this.fetchKeys();
 
     if (this.keys.length === 0) {
@@ -172,8 +192,8 @@ class GeminiService {
 
     // Try each model in the fallback chain (starting with the preferred one)
     const modelsToTry = [
-      modelName,
-      ...MODEL_FALLBACK_CHAIN.filter(m => m !== modelName)
+      targetModel,
+      ...MODEL_FALLBACK_CHAIN.filter(m => m !== targetModel)
     ];
 
     let lastError;
