@@ -150,9 +150,13 @@ export default function StudyHub() {
       }
     }
 
+    // Set default font to ensure consistent spacing
+    doc.setFont('helvetica', 'normal');
+
     if (activeTab === 'flashcards' && flashcards.length > 0) {
       doc.setFontSize(14);
       doc.setTextColor(99, 102, 241);
+      doc.setFont('helvetica', 'bold');
       doc.text('Flashcards', margin, y);
       doc.setTextColor(0, 0, 0);
       y += 10;
@@ -160,14 +164,14 @@ export default function StudyHub() {
       flashcards.forEach((card, i) => {
         addPageCheck(25);
         doc.setFontSize(10);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         const qLines = doc.splitTextToSize(`${i + 1}. ${card.front}`, maxWidth);
         doc.text(qLines, margin, y);
         y += qLines.length * 5 + 2;
 
-        doc.setFont(undefined, 'normal');
+        doc.setFont('helvetica', 'normal');
         doc.setTextColor(80, 80, 80);
-        const aLines = doc.splitTextToSize(`   → ${card.back}`, maxWidth - 5);
+        const aLines = doc.splitTextToSize(`   ANSWER: ${card.back}`, maxWidth - 5);
         doc.text(aLines, margin, y);
         doc.setTextColor(0, 0, 0);
         y += aLines.length * 5 + 8;
@@ -175,6 +179,7 @@ export default function StudyHub() {
     } else if (activeTab === 'quiz' && quiz.length > 0) {
       doc.setFontSize(14);
       doc.setTextColor(99, 102, 241);
+      doc.setFont('helvetica', 'bold');
       doc.text('Practice Quiz', margin, y);
       doc.setTextColor(0, 0, 0);
       y += 10;
@@ -182,16 +187,24 @@ export default function StudyHub() {
       quiz.forEach((q, i) => {
         addPageCheck(35);
         doc.setFontSize(10);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         const qLines = doc.splitTextToSize(`${i + 1}. ${q.question}`, maxWidth);
         doc.text(qLines, margin, y);
         y += qLines.length * 5 + 3;
 
-        doc.setFont(undefined, 'normal');
+        doc.setFont('helvetica', 'normal');
         q.options?.forEach((opt, oi) => {
           addPageCheck(8);
-          const prefix = showQuizResults && oi === q.correct ? '✓ ' : '  ';
-          doc.text(`${prefix}${String.fromCharCode(65 + oi)}. ${opt}`, margin + 5, y);
+          const isCorrect = showQuizResults && oi === q.correct;
+          if (isCorrect) {
+            doc.setTextColor(16, 185, 129); // Emerald color for correct answer
+            doc.setFont('helvetica', 'bold');
+            doc.text(`[CORRECT] ${String.fromCharCode(65 + oi)}. ${opt}`, margin + 5, y);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont('helvetica', 'normal');
+          } else {
+            doc.text(`          ${String.fromCharCode(65 + oi)}. ${opt}`, margin + 5, y);
+          }
           y += 6;
         });
 
@@ -209,34 +222,36 @@ export default function StudyHub() {
       if (showQuizResults) {
         addPageCheck(20);
         doc.setFontSize(12);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         doc.text(`Score: ${quizScore}/${quiz.length}`, margin, y);
         y += 10;
       }
     } else if (activeTab === 'summary' && summary) {
       doc.setFontSize(14);
       doc.setTextColor(99, 102, 241);
+      doc.setFont('helvetica', 'bold');
       doc.text('Study Summary', margin, y);
       doc.setTextColor(0, 0, 0);
       y += 10;
 
       doc.setFontSize(10);
-      doc.setFont(undefined, 'normal');
+      doc.setFont('helvetica', 'normal');
       // Parse summary with basic markdown support
       const lines = summary.split('\n');
       lines.forEach(line => {
         addPageCheck(8);
         if (line.startsWith('## ')) {
           doc.setFontSize(12);
-          doc.setFont(undefined, 'bold');
+          doc.setFont('helvetica', 'bold');
           doc.setTextColor(99, 102, 241);
           doc.text(line.replace('## ', ''), margin, y);
           doc.setTextColor(0, 0, 0);
           doc.setFontSize(10);
-          doc.setFont(undefined, 'normal');
+          doc.setFont('helvetica', 'normal');
           y += 8;
-        } else if (line.startsWith('- ') || line.startsWith('• ')) {
-          const textLines = doc.splitTextToSize(`• ${line.replace(/^[-•]\s*/, '')}`, maxWidth - 10);
+        } else if (line.startsWith('- ') || line.startsWith('* ') || line.startsWith('• ')) {
+          const cleanText = line.replace(/^([-*•])\s*/, '');
+          const textLines = doc.splitTextToSize(`* ${cleanText}`, maxWidth - 10);
           doc.text(textLines, margin + 5, y);
           y += textLines.length * 5 + 2;
         } else if (line.trim()) {
@@ -282,7 +297,13 @@ export default function StudyHub() {
           <div style={{ display: 'flex', gap: '0.25rem' }}>
             <button
               className={`btn btn-sm ${inputMode === 'upload' ? 'btn-primary' : 'btn-ghost'}`}
-              onClick={() => setInputMode('upload')}
+              onClick={() => {
+                if (inputMode === 'upload') {
+                  fileInputRef.current?.click();
+                } else {
+                  setInputMode('upload');
+                }
+              }}
             >
               <Upload size={14} /> Upload PDF
             </button>
