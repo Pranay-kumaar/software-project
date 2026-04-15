@@ -63,19 +63,26 @@ export async function getClassroomByCode(code) {
 }
 
 export async function getClassroomsByTeacher(teacherId) {
-  const q = query(
-    collection(db, 'classrooms'),
-    where('teacherId', '==', teacherId)
-  );
-  const snap = await getDocs(q);
-  // Sort client-side (descending by createdAt) to avoid needing a composite index
-  return snap.docs
-    .map(d => ({ id: d.id, ...d.data() }))
-    .sort((a, b) => {
-      const aTime = a.createdAt?.toMillis?.() || 0;
-      const bTime = b.createdAt?.toMillis?.() || 0;
+  try {
+    const q = query(
+      collection(db, 'classrooms'),
+      where('teacherId', '==', teacherId)
+    );
+    const snap = await getDocs(q);
+    
+    const classrooms = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    
+    // Sort client-side (descending by createdAt)
+    return classrooms.sort((a, b) => {
+      // Handle cases where createdAt might not be set yet or not a timestamp
+      const aTime = a.createdAt?.toMillis?.() || (a.createdAt instanceof Date ? a.createdAt.getTime() : 0);
+      const bTime = b.createdAt?.toMillis?.() || (b.createdAt instanceof Date ? b.createdAt.getTime() : 0);
       return bTime - aTime;
     });
+  } catch (error) {
+    console.error('[Firestore] Error fetching classrooms by teacher:', error);
+    throw error;
+  }
 }
 
 export async function getStudentClassrooms(studentId) {
@@ -119,35 +126,43 @@ export async function getTestById(testId) {
 }
 
 export async function getTestsByClassroom(classroomId) {
-  const q = query(
-    collection(db, 'tests'),
-    where('classroomId', '==', classroomId)
-  );
-  const snap = await getDocs(q);
-  // Sort client-side to avoid needing a composite index
-  return snap.docs
-    .map(d => ({ id: d.id, ...d.data() }))
-    .sort((a, b) => {
-      const aTime = a.createdAt?.toMillis?.() || 0;
-      const bTime = b.createdAt?.toMillis?.() || 0;
+  try {
+    const q = query(
+      collection(db, 'tests'),
+      where('classroomId', '==', classroomId)
+    );
+    const snap = await getDocs(q);
+    const tests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    
+    return tests.sort((a, b) => {
+      const aTime = a.createdAt?.toMillis?.() || (a.createdAt instanceof Date ? a.createdAt.getTime() : 0);
+      const bTime = b.createdAt?.toMillis?.() || (b.createdAt instanceof Date ? b.createdAt.getTime() : 0);
       return bTime - aTime;
     });
+  } catch (error) {
+    console.error('[Firestore] Error fetching tests by classroom:', error);
+    throw error;
+  }
 }
 
 export async function getTestsByTeacher(teacherId) {
-  const q = query(
-    collection(db, 'tests'),
-    where('teacherId', '==', teacherId)
-  );
-  const snap = await getDocs(q);
-  // Sort client-side to avoid needing a composite index
-  return snap.docs
-    .map(d => ({ id: d.id, ...d.data() }))
-    .sort((a, b) => {
-      const aTime = a.createdAt?.toMillis?.() || 0;
-      const bTime = b.createdAt?.toMillis?.() || 0;
+  try {
+    const q = query(
+      collection(db, 'tests'),
+      where('teacherId', '==', teacherId)
+    );
+    const snap = await getDocs(q);
+    const tests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    
+    return tests.sort((a, b) => {
+      const aTime = a.createdAt?.toMillis?.() || (a.createdAt instanceof Date ? a.createdAt.getTime() : 0);
+      const bTime = b.createdAt?.toMillis?.() || (b.createdAt instanceof Date ? b.createdAt.getTime() : 0);
       return bTime - aTime;
     });
+  } catch (error) {
+    console.error('[Firestore] Error fetching tests by teacher:', error);
+    throw error;
+  }
 }
 
 export async function getActiveTestsForStudent(classroomIds) {
